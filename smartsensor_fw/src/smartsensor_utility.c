@@ -15,15 +15,22 @@
 // specific language governing permissions and limitations
 // under the License
 
-#ifndef INC_BUZZER_H_
-#define INC_BUZZER_H_
-
 #include "inc/smartsensor/common.h"
+#include "inc/smartsensor_utility.h"
 
-// Public functions called from main.c
-void initBuzzer();
-void activeBuzzerRec(uint8_t *data, uint8_t len, uint8_t inband);
-void activeBuzzerSend(uint8_t *outData, uint8_t *outLen, uint8_t *inband);
-void interruptTimer1OverflowBuzzer();
+// Taken from http://www.adnbr.co.uk/articles/adc-and-pwm-basics
+// by Sumita because I can't code.
+// It's for the ATtiny13, though.
+int adc_read(uint8_t mux) {
+    // Set the read pin
+    ADMUX = mux;
 
-#endif  // INC_BUZZER_H_
+    // I actually use this one. It's the analog in version of DIGITAL_READ.
+    // Start the conversion
+    ADCSRA |= (1 << ADSC);
+
+    // Wait for it to finish
+    while (ADCSRA & (1 << ADSC)) {}
+
+    return ADC;  // For 10-bit resolution
+}
